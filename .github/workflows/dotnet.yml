@@ -28,11 +28,11 @@ jobs:
           dotnet restore ./PrimeiroServico
           dotnet restore ./SegundoServico
 
-      - name: 🛠️ Build de todos os projetos
+      - name: Build de todos os projetos
         run: |
-          dotnet build ./ApiGateway --no-restore 
-          dotnet build ./PrimeiroServico --no-restore 
-          dotnet build ./SegundoServico --no-restore 
+          dotnet build ./ApiGateway
+          dotnet build ./PrimeiroServico
+          dotnet build ./SegundoServico
       
     # - name: Test
       # run: dotnet test --no-build --verbosity normal
