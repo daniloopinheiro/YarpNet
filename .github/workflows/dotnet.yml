@@ -14,15 +14,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout do código
+      - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: 🧰 Setup .NET 6
+      - name: Setup .NET 6
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 6.0.x
 
-      - name: 📦 Restore dependências de todos os projetos
+      - name: Restore dependências de todos os projetos
         run: |
           dotnet restore ./ApiGateway
           dotnet restore ./PrimeiroServico
@@ -30,9 +30,9 @@ jobs:
 
       - name: 🛠️ Build de todos os projetos
         run: |
-          dotnet build ./ApiGateway --no-restore --configuration Release
-          dotnet build ./PrimeiroServico --no-restore --configuration Release
-          dotnet build ./SegundoServico --no-restore --configuration Release
+          dotnet build ./ApiGateway --no-restore 
+          dotnet build ./PrimeiroServico --no-restore 
+          dotnet build ./SegundoServico --no-restore 
       
     # - name: Test
       # run: dotnet test --no-build --verbosity normal
