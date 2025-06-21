@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 namespace PrimeiroServico;
 
 public class Primeiro
@@ -11,17 +10,3 @@ public class Primeiro
 
     public string? Summary { get; set; }
 }
-=======
-namespace PrimeiroServico;
-
-public class Primeiro
-{
-    public DateTime Date { get; set; }
-
-    public int TemperatureC { get; set; }
-
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-
-    public string? Summary { get; set; }
-}
->>>>>>> refs/remotes/origin/main
