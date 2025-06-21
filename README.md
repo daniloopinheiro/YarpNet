@@ -2,138 +2,111 @@
 
 [![.NET CI Multisserviços](https://github.com/daniloopinheiro/YarpNet/actions/workflows/dotnet.yml/badge.svg)](https://github.com/daniloopinheiro/YarpNet/actions/workflows/dotnet.yml)
 
-# Asp.Net v6 [Yarp](https://www.nuget.org/packages/Yarp.ReverseProxy) MicrosServices
-local de construção, OS Linux (Ubuntu 20.04.6 LTS x86_64): sudo apt autoremove && sudo apt autoclean  && sudo apt update && sudo apt upgrade -y && sudo apt dist-upgrade -y
+> Neste repositório você encontrará um exemplo funcional de microsserviços utilizando **ASP.NET 6** com o pacote **YARP (Yet Another Reverse Proxy)**. Uma solução prática para montar seu **API Gateway** em projetos distribuídos.
 
-### *"Olá caro dev do dotNet, nessa pequena demonstração, você vera neste repositório o código fonte que lhe mostrará, após a execução, o pacote YARP, realizando uma solicitação via o pacote, com uma das apis intermediando os serviços"*
+---
 
-## Processo de Criação
-*obs: instalar versão .net6*
+## 🎯 Objetivos
 
-```shell
-$ dotnet new globaljson --sdk-version 6.x.x
+- ✅ **Educar**: Demonstrar como criar um gateway reverso simples com .NET 6 e YARP.
+- ✅ **Demonstrar**: Integrar múltiplos serviços simulando uma arquitetura de microsserviços.
+- ✅ **Simplificar**: Tornar acessível a adoção de YARP para arquiteturas modernas com ASP.NET.
+
+---
+
+## ⚙️ Processo de Criação
+
+> _Pré-requisitos: .NET 6 instalado_  
+> _Dica para Linux:_  
+> `sudo apt autoremove && sudo apt autoclean && sudo apt update && sudo apt upgrade -y && sudo apt dist-upgrade -y`
+
+---
+
+### 1. Criação dos Serviços
+
+```bash
+dotnet new webapi -o PrimeiroServico -f net6.0
+dotnet new webapi -o SegundoServico -f net6.0
+````
+
+---
+
+### 2. Instalação dos Pacotes
+
+Adicione os pacotes nos dois serviços:
+
+```bash
+dotnet add package Yarp.ReverseProxy --version 2.0.1
+dotnet add package Yarp.Telemetry.Consumption --version 2.0.1
 ```
 
-## Etapa 1: Criando duas APIs
+---
 
-Criado dois projetos separados de API Web do ASP.NET para PrimeiroServico e SegundoServico. Use os seguintes comandos:
+### 3. Configuração dos Endpoints
 
-```shell
-$ dotnet new webapi -o PrimeiroServico -f net6.0
-$ dotnet new webapi -o SegundoServico -f net6.0
-```
+> PrimeiroServico:
 
-## Etapa 2: Instalação do Pacote YARP
-
-Adicione os pacotes YARP NuGet aos dois projetos de APIs:
-
-> PrimeiroServico
-```shell
-$ dotnet add package Yarp.ReverseProxy --version 2.0.1
-$ dotnet add package Yarp.Telemetry.Consumption --version 2.0.1
-```
-
-> SegundoServico
-```shell
-$ dotnet add package Yarp.ReverseProxy --version 2.0.1
-$ dotnet add package Yarp.Telemetry.Consumption --version 2.0.1
-```
-
-## Etapa 3: Configurar as APIs
-
-Em cada arquivo Startup.cs do PrimeiroServico e SegundoServico, configure um endpoint simples:
-
-> // Dentro do método Configure em Startup.cs para PrimeiroServico
 ```csharp
 app.UseRouting();
-app.MapControllers();
-
-app.MapGet("/primeiro", async context => {
-        await context.Response.WriteAsync("Primeiro Service");
+app.MapGet("/primeiro", async context =>
+{
+    await context.Response.WriteAsync("Primeiro Service");
 });
 ```
 
-> // Dentro do método Configure em Startup.cs para SegundoServico
+> SegundoServico:
+
 ```csharp
 app.UseRouting();
-app.MapControllers();
-
-app.MapGet("/segundo", async context => {
-        await context.Response.WriteAsync("Segundo Service");
+app.MapGet("/segundo", async context =>
+{
+    await context.Response.WriteAsync("Segundo Service");
 });
 ```
 
-## Etapa 4: Criado Gateway de APIs
+---
 
-Criando um novo projeto de API Web ASP.NET para o API Gateway:
+### 4. Criando o API Gateway
 
-```shell
-$ dotnet new webapi -o ApiGateway -f net6.0
-```
-## Etapa 5: Instalação do Pacote YARP para API Gateway
-
-Adicione pacotes YARP NuGet ao projeto ApiGateway: 
-
-```shell
-$ dotnet add package Yarp.ReverseProxy --version 2.0.1
-$ dotnet add package Yarp.Telemetry.Consumption --version 2.0.1
+```bash
+dotnet new webapi -o ApiGateway -f net6.0
 ```
 
-## Etapa 6: Configurando o API Gateway
+Adicione os pacotes:
 
-Atualize o arquivo Startup.cs no projeto ApiGateway:
+```bash
+dotnet add package Yarp.ReverseProxy --version 2.0.1
+dotnet add package Yarp.Telemetry.Consumption --version 2.0.1
+```
+
+---
+
+### 5. Configuração do Gateway
+
+> `Program.cs` (ou `Startup.cs`):
 
 ```csharp
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 builder.Services.AddReverseProxy()
   .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
 
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapReverseProxy();
 });
-
-app.Run();
-
 ```
 
-## Etapa 7: Configurando o YARP em appsettings.json
+> `appsettings.json`:
 
-Criando um arquivo appsettings.json no projeto ApiGateway e configure o YARP:
-
-```csharp
+```json
 {
   "ReverseProxy": {
     "Clusters": {
-      "user": {
+      "primeiro": {
         "Destinations": {
           "primeiroServico": { "Address": "https://localhost:5001" }
         }
       },
-      "product": {
+      "segundo": {
         "Destinations": {
           "segundoServico": { "Address": "https://localhost:5002" }
         }
@@ -155,30 +128,72 @@ Criando um arquivo appsettings.json no projeto ApiGateway e configure o YARP:
 }
 ```
 
-## Etapa Final: Executando os serviços e o gateway
+---
 
-Execute cada microsserviço (PrimeiroServico e SegundoServico) e o API Gateway (ApiGateway). 
+### ✅ Execução
 
-```csharp
-$ dotnet run
+Inicie os três projetos individualmente:
+
+```bash
+dotnet run
 ```
 
-Acesse o gateway em https://localhost:5000 e teste as rotas configuradas, como https://localhost:5000/primeiro e https://localhost:5000/segundo.
+Acesse via browser/postman:
+
+* `https://localhost:5000/primeiro`
+* `https://localhost:5000/segundo`
+
+---
+
+## 📚 Conteúdo Adicional
+
+* 💻 Exemplos práticos em ASP.NET 6
+* 🎯 YARP com mapeamento por configuração
+* 🔁 Conceitos básicos de Reverse Proxy e API Gateway
+
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a [MIT License](LICENSE).
+
+---
+
+## 🤝 Como Contribuir
+
+Contribuições são bem-vindas!
+
+* 🔧 Abra uma Issue com sugestões ou dúvidas
+* 📥 Envie um Pull Request com melhorias
+* 💬 Compartilhe com outros devs .NET
+
+---
+
+## 📬 Entre em Contato
+
+Para **colaboração, dúvidas ou consultoria**, entre em contato:
+
+* ✉️ **Pessoal**: [daniloopro@gmail.com](mailto:daniloopro@gmail.com)
+* 🏢 **DevsFree**: [devsfree@devsfree.com.br](mailto:devsfree@devsfree.com.br)
+* 📊 **dopme.io**: [contato@dopme.io](mailto:contato@dopme.io)
+* 💼 **LinkedIn**: [Danilo O. Pinheiro](https://www.linkedin.com/in/daniloopinheiro)
 
 ---
 
 <details>
-    <summary>Referências</summary>
-        
-- [Código fonte](https://github.com/daniloopinheiro/AspNetv6YarpMicrosServices)
-- [Doc template webapi MSFT](https://learn.microsoft.com/en-us/dotnet/core/tutorials/cli-templates-create-project-template)
-- [Doc add package MSFT](https://learn.microsoft.com/pt-br/dotnet/core/tools/dotnet-add-package)
-- [Doc reference MSFT](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-add-reference)
+<summary>📖 Referências</summary>
 
-- [Doc YARP](https://microsoft.github.io/reverse-proxy/index.html)
-- [Nuget - Yarp ReverseProxy](https://www.nuget.org/packages/Yarp.ReverseProxy)
-- [Nuget - Telemetry Consumption](https://www.nuget.org/packages/Yarp.Telemetry.Consumption)
+* [Código Fonte do Projeto](https://github.com/daniloopinheiro/AspNetv6YarpMicrosServices)
+* [Template WebAPI Microsoft Docs](https://learn.microsoft.com/en-us/dotnet/core/tutorials/cli-templates-create-project-template)
+* [dotnet add package](https://learn.microsoft.com/pt-br/dotnet/core/tools/dotnet-add-package)
+* [YARP Documentation](https://microsoft.github.io/reverse-proxy/index.html)
+* [NuGet YARP](https://www.nuget.org/packages/Yarp.ReverseProxy)
+* [NuGet Telemetry Consumption](https://www.nuget.org/packages/Yarp.Telemetry.Consumption)
 
 </details>
 
 ---
+
+<p align="center">
+  Feito com ❤️ por <a href="https://www.linkedin.com/in/daniloopinheiro" target="_blank"><strong>Danilo O. Pinheiro</strong></a> • <a href="mailto:contato@dopme.io">contato@dopme.io</a>
+</p>
