@@ -22,13 +22,18 @@ jobs:
       with:
         dotnet-version: 8.0.x
         
-    - name: Restore dependencies
-      run: dotnet restore
-      working-directory: ./ApiGateway && ./PrimeiroServico && ./SegundoServico
-      
-    - name: Build
-      run: dotnet build --no-restore
-      working-directory: ./ApiGateway && ./PrimeiroServico && ./SegundoServico
+    - name: Restore all projects
+      run: |
+        dotnet restore ./ApiGateway
+        dotnet restore ./PrimeiroServico
+        dotnet restore ./SegundoServico
+
+    - name: Build all projects
+      run: |
+        dotnet build ./ApiGateway --no-restore
+        dotnet build ./PrimeiroServico --no-restore
+        dotnet build ./SegundoServico --no-restore
+
 
       
     # - name: Test
