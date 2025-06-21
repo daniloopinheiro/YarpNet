@@ -30,9 +30,7 @@ jobs:
 
       - name: Build de todos os projetos
         run: |
-          dotnet build ./ApiGateway
-          dotnet build ./PrimeiroServico
-          dotnet build ./SegundoServico
+          dotnet build
       
     # - name: Test
       # run: dotnet test --no-build --verbosity normal
