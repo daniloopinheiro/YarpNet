@@ -194,6 +194,4 @@ Para **colaboração, dúvidas ou consultoria**, entre em contato:
 
 ---
 
-<p align="center">
-  Feito com ❤️ por <a href="https://www.linkedin.com/in/daniloopinheiro" target="_blank"><strong>Danilo O. Pinheiro</strong></a> • <a href="mailto:contato@dopme.io">contato@dopme.io</a>
-</p>
+<p align="center"> Feito com ❤️ por <strong>Danilo O. Pinheiro</strong><br/> <a href="https://devsfree.com.br" target="_blank">DevsFree</a> • <a href="https://dopme.io" target="_blank">dopme.io</a> </p>
